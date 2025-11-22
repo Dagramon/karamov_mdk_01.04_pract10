@@ -1,0 +1,3 @@
+﻿  karamov_mdk_01.04_pract10.cpp
+C:\Users\st310-03\Source\Repos\karamov_mdk_01.04_pract10\karamov_mdk_01.04_pract10.cpp(89,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+  karamov_mdk_01.04_pract10.vcxproj -> C:\Users\st310-03\Source\Repos\karamov_mdk_01.04_pract10\x64\Debug\karamov_mdk_01.04_pract10.exe
