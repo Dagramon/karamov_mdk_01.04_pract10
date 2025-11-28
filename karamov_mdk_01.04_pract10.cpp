@@ -2,24 +2,27 @@
 #include <conio.h>
 #include <Windows.h>
 
+volatile long countIterations = 0;
+volatile long factorialIterations = 0;
+volatile long fibonacciIterations = 0;
+
+HANDLE countThread;
+HANDLE factorialThread;
+HANDLE fibonacciThread;
+HANDLE nagruzThread;
+
 DWORD WINAPI Increment(LPVOID iNum)
 {
-	int iterations = 0;
 	int count = 0;
 	while (true)
 	{
 		count++;
-		iterations++;
+		countIterations++;
 
-		std::cout << std::endl << "ID = " << GetCurrentThreadId() << " Count iterations = " << iterations << " Priority = " << GetThreadPriority(GetCurrentThread()) << std::endl;
-
-		Sleep(1000);
 	};
 }
 DWORD WINAPI Factorial(LPVOID iNum)
 {
-
-	int iterations = 0;
 	int number = (rand() % 5) + 1;
 	int result = 1;
 
@@ -35,16 +38,12 @@ DWORD WINAPI Factorial(LPVOID iNum)
 
 		number = rand() % 5;
 
-		iterations++;
+		factorialIterations++;
 
-		std::cout << std::endl << "ID = " << GetCurrentThreadId() << " Factorial iterations = " << iterations << " Priority = " << GetThreadPriority(GetCurrentThread()) << std::endl;
-
-		Sleep(1000);
 	};
 }
 DWORD WINAPI Fibonacci(LPVOID iNum)
 {
-	int iterations = 0;
 	int prev = 0;
 	int next = 1;
 	int res = 0;
@@ -56,11 +55,8 @@ DWORD WINAPI Fibonacci(LPVOID iNum)
 		prev = next;
 		next = res;
 
-		iterations++;
+		fibonacciIterations++;
 
-		std::cout << std::endl << "ID = " << GetCurrentThreadId() << " Fibonacci iterations = " << iterations << " Priority = " << GetThreadPriority(GetCurrentThread()) << std::endl;
-
-		Sleep(1000);
 	};
 }
 
@@ -68,7 +64,23 @@ DWORD WINAPI Nagruzchik(LPVOID iNum)
 {
 	while (true)
 	{
-		std::cout << "Nagruzchik priority = " << GetThreadPriority(GetCurrentThread()) << std::endl;
+
+	}
+}
+
+DWORD WINAPI Print(LPVOID iNum)
+{
+	while (true)
+	{
+		system("cls");
+		std::cout << "counter ID: " << GetThreadId(countThread) << " iterations: " << countIterations << " priority: " << GetThreadPriority(countThread) << std::endl;
+		std::cout << "fibonaci ID: " << GetThreadId(factorialThread) << " iterations: " << factorialIterations << " priority: " << GetThreadPriority(factorialThread) << std::endl;
+		std::cout << "factorial ID: " << GetThreadId(fibonacciThread) << " iterations: " << fibonacciIterations << " priority: " << GetThreadPriority(fibonacciThread) << std::endl;
+		std::cout << "Nagruzchik priority = " << GetThreadPriority(nagruzThread) << std::endl;
+		std::cout << "1 - set counter priority to 2" << std::endl
+			<< "2 - set fibonacci priority to 2" << std::endl
+			<< "3 - set factorial priority to 2" << std::endl
+			<< "t - nagruzit" << std::endl;
 		Sleep(1000);
 	}
 }
@@ -90,32 +102,37 @@ int main()
 
 	DWORD idThread1;
 
-	HANDLE countThread = CreateThread(NULL, 0, Increment, NULL, 0, &idThread1);
+	countThread = CreateThread(NULL, 0, Increment, NULL, 0, &idThread1);
 
 	SetThreadPriority(countThread, THREAD_PRIORITY_LOWEST);
 
 	DWORD idThread2;
 
-	HANDLE factorialThread = CreateThread(NULL, 0, Factorial, NULL, 0, &idThread2);
+	factorialThread = CreateThread(NULL, 0, Factorial, NULL, 0, &idThread2);
 
 	SetThreadPriority(factorialThread, THREAD_PRIORITY_BELOW_NORMAL);
 
 	DWORD idThread3;
 
-	HANDLE fibonacciThread = CreateThread(NULL, 0, Fibonacci, NULL, 0, &idThread3);
+	fibonacciThread = CreateThread(NULL, 0, Fibonacci, NULL, 0, &idThread3);
 
 	SetThreadPriority(fibonacciThread, THREAD_PRIORITY_ABOVE_NORMAL);
 
 	DWORD idThread;
 
-	HANDLE nagruzThread = CreateThread(NULL, 0, Nagruzchik, NULL, 0, &idThread);
+	nagruzThread = CreateThread(NULL, 0, Nagruzchik, NULL, 0, &idThread);
 
 	SetThreadPriority(nagruzThread, THREAD_PRIORITY_NORMAL);
+
+	DWORD idThreadPrint;
+
+	HANDLE printer = CreateThread(NULL, 0, Print, NULL, 0, &idThreadPrint);
 
 	char selection = 'a';
 
 	do
 	{
+
 		selection = _getch();
 
 		switch (selection)
@@ -159,6 +176,7 @@ int main()
 	CloseHandle(factorialThread);
 	CloseHandle(fibonacciThread);
 	CloseHandle(nagruzThread);
+	CloseHandle(printer);
 	CloseHandle(duplicatedProcess);
 
 	return 0;
